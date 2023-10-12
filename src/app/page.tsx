@@ -1,19 +1,53 @@
-import Link from "next/link";
+import { getClient } from "@/lib/client";
+import { gql } from "@apollo/client";
+import HomePage from "@/components/HomePage";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export const revalidate = 5;
+
+const query = gql`
+  query GetContactList (
+    $distinct_on: [contact_select_column!], 
+    $limit: Int, 
+    $offset: Int, 
+    $order_by: [contact_order_by!], 
+    $where: contact_bool_exp
+) {
+  contact(
+      distinct_on: $distinct_on, 
+      limit: $limit, 
+      offset: $offset, 
+      order_by: $order_by, 
+      where: $where
+  ){
+    created_at
+    first_name
+    id
+    last_name
+    phones {
+      number
+    }
+  }
+}
+`;
+
+interface Response {
+  contact: { created_at: string; first_name: string; id: number, last_name: string, phones:  { phone: string }[]}[];
+}
+
+export default async function Home() {
+  const client = getClient();
+  const data = await client.query<Response>({
+    query,
+  });
+
+  console.log(data.data.contact);
+
   return (
-    <>
-      <h1>Hello, Next.js 13 App Directory!</h1>
-      <p>
-        <Link href="/client-side">
-          Use Apollo Client inside Client Side Component
-        </Link>
-      </p>
-      <p>
-        <Link href="/server-side">
-          Use Apollo Client inside React Server Component (RSC)
-        </Link>
-      </p>
-    </>
-  )
+    <MaxWidthWrapper>
+      <HomePage/>
+    </MaxWidthWrapper>
+  );
 }

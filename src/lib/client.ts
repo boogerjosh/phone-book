@@ -1,13 +1,15 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { HttpLink } from "@apollo/client";
+import {
+  NextSSRInMemoryCache,
+  NextSSRApolloClient,
+} from "@apollo/experimental-nextjs-app-support/ssr";
 import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc";
 
-const GRAPHQL_ENDPOINT = "https://wpe-hiring.tokopedia.net/graphql"
-
 export const { getClient } = registerApolloClient(() => {
-  return new ApolloClient({
-    cache: new InMemoryCache(),
+  return new NextSSRApolloClient({
+    cache: new NextSSRInMemoryCache(),
     link: new HttpLink({
-      uri: GRAPHQL_ENDPOINT,
+      uri: "https://wpe-hiring.tokopedia.net/graphql",
     }),
   });
 });
