@@ -1,22 +1,20 @@
 "use client";
 
-import React from 'react';
+import React, { ReactNode } from "react";
 import styled from "@emotion/styled";
 
 const Wrapper = styled.main`
   max-width: 1280px;
   width: 100%;
-  min-height: 100vh;
-  margin: auto;
-  display: flex;
-`
+  box-sizing: border-box;
+`;
 
-const MaxWidthWrapper = ({children}) => {
-  return (
-    <Wrapper>
-      {children}
-    </Wrapper>
-  )
+interface MaxWidthWrapperProps {
+  children: ReactNode;
 }
+
+const MaxWidthWrapper = ({ children }: MaxWidthWrapperProps) => {
+  return <Wrapper>{children}</Wrapper>;
+};
 
 export default MaxWidthWrapper
