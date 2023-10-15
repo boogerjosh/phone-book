@@ -5,8 +5,7 @@ import Card from './Card';
 
 const containerStyle = {
   cardContent: css({
-    paddingTop: "0",
-    padding: "1.5rem",
+    padding: "0rem 1.5rem",
     "@media (max-width: 768px)": {
       padding: "1rem",
     },
@@ -21,7 +20,7 @@ const containerStyle = {
     // display: "grid",
     overflowY: "auto",
     height: "100%",
-    maxHeight: "200px"
+    maxHeight: "200px",
   }),
   listLayout: css({
     display: "flex",

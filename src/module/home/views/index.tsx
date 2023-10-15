@@ -6,6 +6,7 @@ import Link from "next/link";
 import SearchInput from "../components/SearchInput";
 import Card from "../components/Card";
 import FavoriteContact from "../components/FavoriteContact";
+import PaginationControls from "../components/PaginationControls";
 
 const containerStyle = {
   containerWrapper: css({
@@ -211,6 +212,7 @@ interface HomeViewProps {
   loading: boolean;
   error: any; // Replace 'any' with the type of your error object
   setSearchQuery: (query: string) => void;
+  searchParams
 }
 
 const HomeView: React.FC<HomeViewProps> = ({
@@ -218,12 +220,12 @@ const HomeView: React.FC<HomeViewProps> = ({
   loading,
   error,
   setSearchQuery,
+  searchParams
 }) => {
-  // Load favorite contacts from localStorage
+   // Load favorite contacts from localStorage
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  console.log(favorites, "favorites");
 
-  let _regularContacts = contacts.filter((contact) => {
+  let filterContacts = contacts.filter((contact) => {
     // Check if the contact is not in the favorites list
     for (let i = 0; i < favorites.length; i++) {
       if (favorites[i].id === contact.id) {
@@ -234,6 +236,57 @@ const HomeView: React.FC<HomeViewProps> = ({
     // If the contact is not in the favorites list, include it in _regularContacts
     return true;
   });
+
+  const page = searchParams['page'] ?? "1";
+  const per_page = searchParams['per_page'] ?? '10';
+
+  const start = (Number(page) - 1) * Number(per_page);
+  const end = start + Number(per_page);
+
+  // Filter contacts for the current page
+  const _entireContacts = filterContacts.slice(start, end);
+
+  // Create separate arrays for favorite and regular contacts
+  const _favoriteContacts = _entireContacts.filter((contact) =>
+    favorites.some((favorite) => favorite.id === contact.id)
+  );
+  
+  const _regularContacts = _entireContacts.filter((contact) =>
+    !_favoriteContacts.some((favorite) => favorite.id === contact.id)
+  );
+
+  // Calculate how many more contacts can be added to _regularContacts
+  const regularContactCount = _regularContacts.length;
+  const contactsToAdd = 10 - regularContactCount;
+
+  // If there are more contacts available, add them to _regularContacts
+  if (contactsToAdd > 0 && filterContacts.length > end) {
+    const additionalContacts = filterContacts.slice(end, end + contactsToAdd);
+    _regularContacts.push(...additionalContacts);
+  }
+  
+  //   // Load favorite contacts from localStorage
+  // const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+  // const page = searchParams['page'] ?? "1"
+  // const per_page = searchParams['per_page'] ?? '10'
+  
+  // const start = (Number(page) - 1) * Number(per_page)
+  // const end = start + Number(per_page)
+  
+  // const _entireContacts = contacts.slice(start, end);
+
+  // let _regularContacts = contacts.filter((contact) => {
+  //   // Check if the contact is not in the favorites list
+  //   for (let i = 0; i < favorites.length; i++) {
+  //     if (favorites[i].id === contact.id) {
+  //       // If the contact is in the favorites list, exclude it from _regularContacts
+  //       return false;
+  //     }
+  //   }
+  //   // If the contact is not in the favorites list, include it in _regularContacts
+  //   return true;
+  // });
 
   return (
     <div css={containerStyle.containerWrapper}>
@@ -290,12 +343,9 @@ const HomeView: React.FC<HomeViewProps> = ({
                     <Card contacts={_regularContacts} />
                   )}
                 </div>
-                {/* <Pagination
-                  currentPage={currentPage}
-                  totalCount={contacts?.length}
-                  pageSize={PageSize}
-                  onPageChange={(page) => setCurrentPage(page)}
-                /> */}
+                <PaginationControls
+                  hasNextPage={end < filterContacts.length}
+                  hasPrevPage={start > 0} contacts={filterContacts} />
               </div>
             </div>
           </div>

@@ -35,7 +35,7 @@ const containerStyle = {
     },
   }),
   profileNumber: css({
-    color: "hsl(var(--muted-foreground))",
+    color: "rgb(37 99 235)",
     fontSize: ".875rem",
     lineHeight: "1.25rem",
     "@media (max-width: 768px)": {
@@ -86,7 +86,7 @@ const containerStyle = {
   }),
 };
 
-const Card = ({ contacts }) => {   
+const Card = ({ contacts }) => {  
   
   return (
     <>
@@ -107,7 +107,7 @@ const Card = ({ contacts }) => {
                   : "No Name"}
               </div>
               <div css={containerStyle.profileNumber}>
-                {contact.phones[0]?.number}
+                {contact.phones.length === 0 ? "No number" : contact.phones[0]?.number === "" ? "No number" : contact.phones[0]?.number}
               </div>
             </div>
           </div>

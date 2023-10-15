@@ -1,6 +1,5 @@
-"use client";
-
 /** @jsxImportSource @emotion/react */
+"use client";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
 import { useContactContext } from "@/contexts/ContactContext";
@@ -234,7 +233,6 @@ const containerStyle = {
     alignItems: "center",
     justifyContent: "center",
     padding: "0.25rem",
-    marginBottom: "0.75rem",
     marginLeft: "0.25rem",
   }),
   errorMessage: css({
@@ -256,7 +254,7 @@ const FormView = () => {
     setPhoneNumbers([...phoneNumbers, ""]);
   };
 
-  const handleDelete = (index) => {
+  const handleDeleteInputNumber = (index) => {
     setPhoneNumbers((prevPhoneNumbers) => {
       // Use filter to remove the phone number at the specified index
       return prevPhoneNumbers.filter((_, i) => i !== index);
@@ -419,7 +417,7 @@ const FormView = () => {
                         css={containerStyle.labelText}
                       >
                         Number {index + 1}
-                        <div style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", width: '100%' }}>
                           <input
                             css={containerStyle.inputField}
                             type="text"
@@ -434,7 +432,7 @@ const FormView = () => {
                             <button
                               type="button"
                               css={containerStyle.deleteButton}
-                              onClick={() => handleDelete(index)}
+                              onClick={() => handleDeleteInputNumber(index)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -466,7 +464,7 @@ const FormView = () => {
                   </button>
                 </fieldset>
 
-                <button type="submit" css={containerStyle.buttonSearch}>
+                <button type="submit" disabled={isLoading} css={containerStyle.buttonSearch}>
                   {isLoading ? "Saving..." : "Submit"}
                 </button>
               </form>

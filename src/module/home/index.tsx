@@ -4,7 +4,7 @@ import { useContactContext } from "@/contexts/ContactContext";
 import HomeView from "./views";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
-const HomePage = () => {
+const HomePage = ({ searchParams }) => {
   const { contacts, setContacts, loading, error, setSearchQuery } =
     useContactContext();
 
@@ -15,6 +15,7 @@ const HomePage = () => {
         loading={loading}
         error={error}
         setSearchQuery={setSearchQuery}
+        searchParams={searchParams}
       />
     </MaxWidthWrapper>
   );

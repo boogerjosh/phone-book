@@ -3,7 +3,7 @@
 import DetailViews from "./views";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { useContactContext } from "@/contexts/ContactContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const DetailPage = ({ idContact }) => {
   const {
@@ -11,6 +11,7 @@ const DetailPage = ({ idContact }) => {
     contactDetailError,
     contactDetailData,
     setIdContact,
+    deleteContact
   } = useContactContext();
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const DetailPage = ({ idContact }) => {
         contact={contactDetailData}
         contactDetailLoading={contactDetailLoading}
         contactDetailError={contactDetailError}
+        deleteContact={deleteContact}
       />
     </MaxWidthWrapper>
   );

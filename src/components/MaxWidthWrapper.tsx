@@ -7,6 +7,7 @@ const Wrapper = styled.main`
   max-width: 1280px;
   width: 100%;
   box-sizing: border-box;
+  margin: auto;
 `;
 
 interface MaxWidthWrapperProps {

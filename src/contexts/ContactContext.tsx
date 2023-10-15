@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { GET_CONTACT_LIST } from "@/graphql/GetContactList";
 import { ADD_CONTACT_WITH_PHONES } from "@/graphql/AddContactWithPhones";
 import { GET_CONTACT_DETAIL } from "@/graphql/GetContactDetail ";
+import { DELETE_CONTACT } from "@/graphql/DeleteContactDetail";
 
 // Create a context for managing contact data
 const ContactContext = createContext();
@@ -43,6 +44,7 @@ export const ContactProvider: React.FC = ({ children }) => {
     variables: { id: idContact },
     skip: !idContact, // Skip the query if idContact is null
   });
+  const [deleteContact] = useMutation(DELETE_CONTACT);
 
   useEffect(() => {
     if (!loading && !error && data) {
@@ -73,6 +75,32 @@ export const ContactProvider: React.FC = ({ children }) => {
     }
   };
 
+  const handleDeleteContact = async (id) => {
+  try {
+    const { data } = await deleteContact({ variables: { id } });
+
+    // Get the current favorites from localStorage
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    // Filter out the deleted contact
+    const newFavorites = favorites.filter(contactId => contactId !== id);
+
+    // Save the updated favorites back to localStorage
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+
+    // Remove the deleted contact from the contacts state
+    const newContacts = contacts.filter(contact => contact.id !== data.delete_contact_by_pk.id);
+    setContacts(newContacts);
+
+    // Save the updated contacts data to localStorage
+    localStorage.setItem("contacts", JSON.stringify(newContacts));
+
+    toast.success("Successfully deleted!");
+  } catch (err) {
+    console.error(err);
+  }
+  };
+
   // Provide the state and the setter function to the context
   return (
     <ContactContext.Provider
@@ -83,6 +111,7 @@ export const ContactProvider: React.FC = ({ children }) => {
         error,
         setSearchQuery,
         addContact: handleAddContact,
+        deleteContact: handleDeleteContact,
         contactDetailData,
         contactDetailLoading,
         contactDetailError,

@@ -2,8 +2,9 @@
 "use client";
 
 import { css } from "@emotion/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import React from "react";
 
 const containerStyle = {
   containerWrapper: css({
@@ -207,29 +208,92 @@ const containerStyle = {
     },
     padding: "0",
     display: "block",
-    marginTop: "0.5rem",
   }),
+  buttonDelete: css({
+    backgroundColor: "rgb(225 29 72)",
+    border: "none",
+    borderRadius: ".5rem",
+    boxSizing: "border-box",
+    color: "white",
+    fontFamily:
+      "Inter var, ui-sans-serif, system-ui, -apple-system, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+    fontSize: ".75rem",
+    lineHeight: "1.25rem",
+    fontWeight: "600",
+    textAlign: "center",
+    textDecoration: "none #D1D5DB solid",
+    textDecorationThickness: "auto",
+    cursor: "pointer",
+    userSelect: "none",
+    webkitUserSelect: "none",
+    touchAction: "manipulation",
+    hover: {
+      backgroundColor: "rgb(249,250,251)",
+    },
+    padding: "0.25rem 0.5rem",
+    display: "block",
+  })
 };
 
-const DetailViews = ({ contact, contactDetailLoading, contactDetailError }) => {
+const DetailViews = ({ contact, contactDetailLoading, contactDetailError, deleteContact }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInFavorites, setIsInFavorites] = useState(false);
+  const router = useRouter();
+
   const _detailContacts =
     contact?.contact_by_pk === null ? "No data found" : contact;
 
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-  const isInFavorites = favorites.some(
-    (favorite) => favorite.id === _detailContacts?.contact_by_pk.id
-  );
+   // This effect will update the `isInFavorites` flag when favorites or _detailContacts change.
+  useEffect(() => {
+    setIsInFavorites(favorites.some(favorite => favorite.id === _detailContacts?.contact_by_pk.id));
+  }, [favorites, _detailContacts]);
 
-  const handleClick = () => {
+  const handleClickFavorite = () => {
     // Add the new contact to the favorites list
     favorites.push(_detailContacts?.contact_by_pk);
 
     // Save the updated favorites list back to localStorage
     localStorage.setItem("favorites", JSON.stringify(favorites));
 
+    router.push("/");
+
     toast.success("Succesfully added to favorite list");
   }
+
+  const handleClickDelete = (id) => {
+  setIsLoading(true);
+
+  setTimeout(async () => {
+      try {
+        // Check if the contact is in the favorites
+        const isContactInFavorites = favorites.some(contact => contact.id === id);
+
+        if (isContactInFavorites) {
+          // If it is, remove it from the favorites
+          const newFavorites = favorites.filter(contact => contact.id !== id);
+
+          // Save the updated favorites back to localStorage
+          localStorage.setItem("favorites", JSON.stringify(newFavorites));
+        }
+
+        // Then delete the contact
+        await deleteContact(id);
+
+        setIsLoading(false);
+
+        // If the contact was in favorites, set isInFavorites back to true
+        if (isContactInFavorites) {
+          setIsInFavorites(true);
+        }
+
+        router.push("/");
+      } catch (err) {
+        console.error(err);
+      }
+    }, 1000);
+  };
 
   return (
     <div css={containerStyle.containerWrapper}>
@@ -291,92 +355,57 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError }) => {
                           }`.trim()
                         : "No Name"}
                     </div>
-                    <div css={containerStyle.profileNumber}>
-                      <span
+                      <div css={containerStyle.profileNumber}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#000",
+                    }}
+                  >
+                    mobile {isInFavorites && "⭐"}
+                        </span>
+                    {_detailContacts?.contact_by_pk.phones.length === 0 ? <span
                         style={{
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          color: "#000",
+                          display: "block",
+                        }}
+                      >No number</span> : _detailContacts?.contact_by_pk.phones.map((phone, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          display: "block",
                         }}
                       >
-                        mobile {isInFavorites && "⭐"}
+                        {phone.number === ""
+                          ? "*not number*"
+                          : phone.number}
                       </span>
-                      {_detailContacts?.contact_by_pk.phones.map(
-                        (phone, idx) => (
-                          <span
-                            key={idx}
-                            style={{
-                              display: "block",
-                            }}
+                    )
+                  )}
+                      </div>
+                      <div style={{display: "flex", alignItems: "center", width: "100%",
+                        marginTop: "0.5rem", justifyContent: "space-between"}}>
+                        {!isInFavorites && (
+                          <button
+                            onClick={handleClickFavorite}
+                            css={containerStyle.buttonSearch}
+                            type="button"
                           >
-                            {phone.number === ""
-                              ? "*not number*"
-                              : phone.number}
-                          </span>
-                        )
-                      )}
-                    </div>
-                    {!isInFavorites && (
-                      <button
-                        onClick={handleClick}
-                        css={containerStyle.buttonSearch}
-                        type="button"
-                      >
-                        Add to favorites⭐
-                      </button>
-                    )}
+                            Add to favorites⭐
+                          </button>
+                        )}
+                          <button
+                            css={containerStyle.buttonDelete}
+                            type="button"
+                              onClick={() => handleClickDelete(_detailContacts?.contact_by_pk.id)}
+                              disabled={isLoading}
+                          >
+                              {isLoading ? "Deleting..." : "Delete contact"}
+                          </button>
+                      </div>
                   </div>
                 </>
               )}
-              {/* {_detailContacts === "No data found" ? (
-                <div css={containerStyle.noDataFound}>No data found</div>
-              ) : (
-                <>
-                  <span css={containerStyle.profileImage}>
-                    {`${contact?.contact_by_pk?.first_name.charAt(
-                      0
-                    )}${contact?.contact_by_pk?.last_name.charAt(
-                      0
-                    )}`.toUpperCase()}
-                  </span>
-                  <div
-                    style={{
-                      marginTop: "1rem",
-                      width: "100%",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <div css={containerStyle.profileName}>
-                      {`${contact?.contact_by_pk?.first_name} ${contact?.contact_by_pk?.last_name}`}
-                    </div>
-                    <div css={containerStyle.profileNumber}>
-                      <span
-                        style={{
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          color: "#000",
-                          marginLeft: "0.5rem",
-                        }}
-                      >
-                        mobile
-                      </span>
-                      {contact?.contact_by_pk.phones
-                        ? contact?.contact_by_pk.phones.map((phone, idx) => (
-                            <span
-                              key={idx}
-                              style={{ display: "block", marginLeft: "0.5rem" }}
-                            >
-                              {phone.number}
-                            </span>
-                          ))
-                        : "No number"}
-                    </div>
-                    <button css={containerStyle.buttonSearch}>
-                      Add to favorites⭐
-                    </button>
-                  </div>
-                </>
-              )} */}
             </div>
           </div>
         </div>
