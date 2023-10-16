@@ -23,9 +23,14 @@ export const useContactContext = () => {
 export const ContactProvider: React.FC = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [contacts, setContacts] = useState(() => {
+  if (typeof window !== 'undefined') {
     const savedContacts = localStorage.getItem("contacts");
     return savedContacts ? JSON.parse(savedContacts) : [];
+    } else {
+      return [];
+    }
   });
+
   const [idContact, setIdContact] = useState(null);
 
   const { loading, error, data } = useQuery(GET_CONTACT_LIST, {

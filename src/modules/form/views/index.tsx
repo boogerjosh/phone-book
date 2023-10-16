@@ -347,7 +347,7 @@ const FormView = () => {
             <h3 css={containerStyle.headingCard}>New Contact Form</h3>
             <p css={containerStyle.textCard}>
               Add new connections! This is where you begin weaving your web of
-              contacts. Fill in the details and let's help you keep track of
+              contacts. Fill in the details and let&apos;s help you keep track of
               your expanding network.
             </p>
           </div>
