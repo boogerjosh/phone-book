@@ -31,7 +31,11 @@ const containerStyle = {
   }),
 };
 
-const SearchInput = ({ setSearchQuery }) => {
+interface SearchInputProps {
+  setSearchQuery: (query: string) => void;
+}
+
+const SearchInput = ({ setSearchQuery }: SearchInputProps) => {
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };

@@ -1,7 +1,10 @@
 
 /** @jsxImportSource @emotion/react */
+
+"use client"
 import { css } from "@emotion/react";
 import Link from 'next/link';
+import { useEffect, useState } from "react";
 
 const containerStyle = {
   listLayout: css({
@@ -27,17 +30,26 @@ const containerStyle = {
     lineHeight: "1",
     fontWeight: "500",
     fontSize: ".875rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    width: "200px",
     "@media (max-width: 768px)": {
       overflow: "hidden",
       textOverflow: "ellipsis",
       whiteSpace: "nowrap",
       width: "120px",
     },
+    marginBottom: "0.25rem"
   }),
   profileNumber: css({
     color: "rgb(37 99 235)",
     fontSize: ".875rem",
     lineHeight: "1.25rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    width: "200px",
     "@media (max-width: 768px)": {
       overflow: "hidden",
       textOverflow: "ellipsis",
@@ -87,11 +99,19 @@ const containerStyle = {
 };
 
 const Card = ({ contacts }) => {  
-  
+  const [dataContacts, setDataContacts] = useState([]);
+
+  useEffect(() => {
+    setDataContacts(contacts);
+  }, [contacts]);
   return (
     <>
-      {contacts.map((contact, index) => (
-        <div css={containerStyle.listLayout} key={index}>
+      {dataContacts.map((contact, index) => (
+        <div
+          data-testid="contact-card"
+          css={containerStyle.listLayout}
+          key={index}
+        >
           <div style={{ display: "flex", alignItems: "center" }}>
             <span css={containerStyle.profileImage}>
               {`${contact.first_name.charAt(0)}${contact.last_name.charAt(
@@ -107,7 +127,11 @@ const Card = ({ contacts }) => {
                   : "No Name"}
               </div>
               <div css={containerStyle.profileNumber}>
-                {contact.phones.length === 0 ? "No number" : contact.phones[0]?.number === "" ? "No number" : contact.phones[0]?.number}
+                {contact.phones.length === 0
+                  ? "No number"
+                  : contact.phones[0]?.number === ""
+                  ? "No number"
+                  : contact.phones[0]?.number}
               </div>
             </div>
           </div>

@@ -125,26 +125,30 @@ const containerStyle = {
   }),
 };
 
-const FavoriteContact = ({ favorites }) => {
+type Contact = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  phones: { number: string }[];
+};
+
+interface FavoriteContactProps {
+  favorites: Contact[];
+}
+
+const FavoriteContact: React.FC<FavoriteContactProps> = ({ favorites }) => {
   return (
     <div css={containerStyle.cardContent}>
-        <h4 css={containerStyle.headingCardContact}>Favorite contact⭐</h4>
-        <div css={containerStyle.gridLayout}>
-          {/* {map dataContacts} with this list layout */}
-          {favorites.length === 0 ? (
-            // Handle no data found
-            <div css={containerStyle.noDataFound}>No favorites</div>
-          ) : (
-            // Map the data based on the query result
-            <Card contacts={favorites} />
-          )}
-        </div>
-        {/* <Pagination
-                currentPage={currentPage}
-                totalCount={contacts?.length}
-                pageSize={PageSize}
-                onPageChange={(page) => setCurrentPage(page)}
-              /> */}
+      <h4 css={containerStyle.headingCardContact}>Favorite contact⭐</h4>
+      <div css={containerStyle.gridLayout}>
+        {favorites.length === 0 ? (
+          // Handle no data found
+          <div css={containerStyle.noDataFound}>No favorites</div>
+        ) : (
+          // Map the data based on the query result
+          <Card contacts={favorites} />
+        )}
+      </div>
     </div>
   );
 };

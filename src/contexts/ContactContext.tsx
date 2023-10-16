@@ -50,9 +50,6 @@ export const ContactProvider: React.FC = ({ children }) => {
     if (!loading && !error && data) {
       // Update the contacts state with the fetched data
       setContacts(data.contact);
-
-      // Save the contacts data to localStorage
-      localStorage.setItem("contacts", JSON.stringify(data.contact));
     }
   }, [loading, error, data]);
 
@@ -76,29 +73,31 @@ export const ContactProvider: React.FC = ({ children }) => {
   };
 
   const handleDeleteContact = async (id) => {
-  try {
-    const { data } = await deleteContact({ variables: { id } });
+    try {
+      const { data } = await deleteContact({ variables: { id } });
 
-    // Get the current favorites from localStorage
-    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      // Get the current favorites from localStorage
+      const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-    // Filter out the deleted contact
-    const newFavorites = favorites.filter(contactId => contactId !== id);
+      // Filter out the deleted contact
+      const newFavorites = favorites.filter((contactId) => contactId !== id);
 
-    // Save the updated favorites back to localStorage
-    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+      // Save the updated favorites back to localStorage
+      localStorage.setItem("favorites", JSON.stringify(newFavorites));
 
-    // Remove the deleted contact from the contacts state
-    const newContacts = contacts.filter(contact => contact.id !== data.delete_contact_by_pk.id);
-    setContacts(newContacts);
+      // Remove the deleted contact from the contacts state
+      const newContacts = contacts.filter(
+        (contact) => contact.id !== data.delete_contact_by_pk.id
+      );
+      setContacts(newContacts);
 
-    // Save the updated contacts data to localStorage
-    localStorage.setItem("contacts", JSON.stringify(newContacts));
+      // Save the updated contacts data to localStorage
+      localStorage.setItem("contacts", JSON.stringify(newContacts));
 
-    toast.success("Successfully deleted!");
-  } catch (err) {
-    console.error(err);
-  }
+      toast.success("Successfully deleted!");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // Provide the state and the setter function to the context

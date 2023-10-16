@@ -2,7 +2,7 @@
 "use client";
 
 import { css } from "@emotion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -133,6 +133,8 @@ const containerStyle = {
     fontWeight: "500",
     fontSize: "1rem",
     textAlign: "center",
+    maxWidth: "400px",
+    wordWrap: "break-word",
   }),
   profileNumber: css({
     color: "rgb(37 99 235)",
@@ -144,7 +146,7 @@ const containerStyle = {
     backgroundColor: "#EFF0EF",
     padding: ".5rem .5rem",
     borderRadius: ".5rem",
-    boxSizing: 'border-box'
+    boxSizing: "border-box",
   }),
   noDataFound: css({
     display: "flex",
@@ -232,10 +234,15 @@ const containerStyle = {
     },
     padding: "0.25rem 0.5rem",
     display: "block",
-  })
+  }),
 };
 
-const DetailViews = ({ contact, contactDetailLoading, contactDetailError, deleteContact }) => {
+const DetailViews = ({
+  contact,
+  contactDetailLoading,
+  contactDetailError,
+  deleteContact,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInFavorites, setIsInFavorites] = useState(false);
   const router = useRouter();
@@ -243,14 +250,23 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError, delete
   const _detailContacts =
     contact?.contact_by_pk === null ? "No data found" : contact;
 
-  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  const favorites = useMemo(
+    () => JSON.parse(localStorage.getItem("favorites")) || [],
+    []
+  );
 
-   // This effect will update the `isInFavorites` flag when favorites or _detailContacts change.
   useEffect(() => {
-    setIsInFavorites(favorites.some(favorite => favorite.id === _detailContacts?.contact_by_pk.id));
+    if (_detailContacts !== "No data found") {
+      setIsInFavorites(
+        favorites.some(
+          (favorite) => favorite.id === _detailContacts?.contact_by_pk.id
+        )
+      );
+    }
   }, [favorites, _detailContacts]);
 
   const handleClickFavorite = () => {
+    setIsLoading(true);
     // Add the new contact to the favorites list
     favorites.push(_detailContacts?.contact_by_pk);
 
@@ -260,19 +276,21 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError, delete
     router.push("/");
 
     toast.success("Succesfully added to favorite list");
-  }
+  };
 
-  const handleClickDelete = (id) => {
-  setIsLoading(true);
+  const handleClickDelete = (id: number) => {
+    setIsLoading(true);
 
-  setTimeout(async () => {
+    setTimeout(async () => {
       try {
         // Check if the contact is in the favorites
-        const isContactInFavorites = favorites.some(contact => contact.id === id);
+        const isContactInFavorites = favorites.some(
+          (contact) => contact.id === id
+        );
 
         if (isContactInFavorites) {
           // If it is, remove it from the favorites
-          const newFavorites = favorites.filter(contact => contact.id !== id);
+          const newFavorites = favorites.filter((contact) => contact.id !== id);
 
           // Save the updated favorites back to localStorage
           localStorage.setItem("favorites", JSON.stringify(newFavorites));
@@ -280,13 +298,6 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError, delete
 
         // Then delete the contact
         await deleteContact(id);
-
-        setIsLoading(false);
-
-        // If the contact was in favorites, set isInFavorites back to true
-        if (isContactInFavorites) {
-          setIsInFavorites(true);
-        }
 
         router.push("/");
       } catch (err) {
@@ -306,9 +317,9 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError, delete
               </h3>
               <p css={containerStyle.textCard}>Your Universal Directory!</p>
             </div>
-            <button type="button" css={containerStyle.buttonEdit}>
+            {/* <button type="button" css={containerStyle.buttonEdit}>
               Edit
-            </button>
+            </button> */}
           </div>
 
           <div css={containerStyle.cardContent}>
@@ -355,54 +366,71 @@ const DetailViews = ({ contact, contactDetailLoading, contactDetailError, delete
                           }`.trim()
                         : "No Name"}
                     </div>
-                      <div css={containerStyle.profileNumber}>
-                  <span
-                    style={{
-                      fontSize: "0.75rem",
-                      fontWeight: "500",
-                      color: "#000",
-                    }}
-                  >
-                    mobile {isInFavorites && "⭐"}
-                        </span>
-                    {_detailContacts?.contact_by_pk.phones.length === 0 ? <span
-                        style={{
-                          display: "block",
-                        }}
-                      >No number</span> : _detailContacts?.contact_by_pk.phones.map((phone, idx) => (
+                    <div css={containerStyle.profileNumber}>
                       <span
-                        key={idx}
                         style={{
-                          display: "block",
+                          fontSize: "0.75rem",
+                          fontWeight: "500",
+                          color: "#000",
                         }}
                       >
-                        {phone.number === ""
-                          ? "*not number*"
-                          : phone.number}
+                        mobile {isInFavorites && "⭐"}
                       </span>
-                    )
-                  )}
-                      </div>
-                      <div style={{display: "flex", alignItems: "center", width: "100%",
-                        marginTop: "0.5rem", justifyContent: "space-between"}}>
-                        {!isInFavorites && (
-                          <button
-                            onClick={handleClickFavorite}
-                            css={containerStyle.buttonSearch}
-                            type="button"
-                          >
-                            Add to favorites⭐
-                          </button>
-                        )}
-                          <button
-                            css={containerStyle.buttonDelete}
-                            type="button"
-                              onClick={() => handleClickDelete(_detailContacts?.contact_by_pk.id)}
-                              disabled={isLoading}
-                          >
-                              {isLoading ? "Deleting..." : "Delete contact"}
-                          </button>
-                      </div>
+                      {_detailContacts?.contact_by_pk.phones.length === 0 ? (
+                        <span
+                          style={{
+                            display: "block",
+                          }}
+                        >
+                          No number
+                        </span>
+                      ) : (
+                        _detailContacts?.contact_by_pk.phones.map(
+                          (phone, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                display: "block",
+                              }}
+                            >
+                              {phone.number === ""
+                                ? "*not number*"
+                                : phone.number}
+                            </span>
+                          )
+                        )
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        marginTop: "0.5rem",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      {!isInFavorites && (
+                        <button
+                          onClick={handleClickFavorite}
+                          css={containerStyle.buttonSearch}
+                          type="button"
+                          disabled={isLoading}
+                        >
+                          Add to favorites⭐
+                        </button>
+                      )}
+                      <button
+                        css={containerStyle.buttonDelete}
+                        type="button"
+                        onClick={() =>
+                          handleClickDelete(_detailContacts?.contact_by_pk.id)
+                        }
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Deleting..." : "Delete contact"}
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

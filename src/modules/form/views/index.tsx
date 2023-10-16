@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 "use client";
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useContactContext } from "@/contexts/ContactContext";
 import { useRouter } from "next/navigation";
 
@@ -256,7 +256,6 @@ const FormView = () => {
 
   const handleDeleteInputNumber = (index) => {
     setPhoneNumbers((prevPhoneNumbers) => {
-      // Use filter to remove the phone number at the specified index
       return prevPhoneNumbers.filter((_, i) => i !== index);
     });
   };
@@ -287,14 +286,14 @@ const FormView = () => {
     // Validate first name
     if (!firstName) {
       tempErrors.firstName = "First name is required.";
-    } else if (firstName && !/^[a-zA-Z]+$/.test(firstName)) {
+    } else if (firstName && !/^[a-zA-Z\s]+$/.test(firstName)) {
       tempErrors.firstName = "First name cannot contain special characters.";
     } else if (contacts.some((contact) => contact.first_name === firstName)) {
       tempErrors.firstName = "Name must be unique.";
     }
 
     // Validate last name
-    if (lastName && !/^[a-zA-Z]+$/.test(lastName)) {
+    if (lastName && !/^[a-zA-Z\s]+$/.test(lastName)) {
       tempErrors.lastName = "Last name cannot contain special characters.";
     }
 
@@ -331,9 +330,7 @@ const FormView = () => {
           setFirstName("");
           setLastName("");
           setPhoneNumbers([""]);
-
-          setIsLoading(false);
-
+          
           router.push("/");
         } catch (err) {
           console.error(err);
@@ -417,7 +414,7 @@ const FormView = () => {
                         css={containerStyle.labelText}
                       >
                         Number {index + 1}
-                        <div style={{ display: "flex", alignItems: "center", width: '100%' }}>
+                        <div style={{ display: "flex", alignItems: "center", width: '100%', marginBottom: '0.75rem' }}>
                           <input
                             css={containerStyle.inputField}
                             type="text"

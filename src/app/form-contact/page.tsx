@@ -1,4 +1,4 @@
-import FormPage from "@/module/form";
+import FormPage from "@/modules/form";
 
 const Form = () => {
   return <FormPage />;

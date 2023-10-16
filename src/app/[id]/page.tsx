@@ -1,4 +1,4 @@
-import DetailPage from "@/module/detail";
+import DetailPage from "@/modules/detail";
 
 const Detail = ({ params }) => {
   const idContact = Number(params.id);
