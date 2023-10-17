@@ -252,7 +252,7 @@ const DetailViews = ({
     contact?.contact_by_pk === null ? "No data found" : contact;
 
   const favorites = useMemo(
-    () => JSON.parse(localStorage.getItem("favorites")) || [],
+    () => JSON.parse(localStorage.getItem("_favorites_")) || [],
     []
   );
 
@@ -272,7 +272,7 @@ const DetailViews = ({
     favorites.push(_detailContacts?.contact_by_pk);
 
     // Save the updated favorites list back to localStorage
-    localStorage.setItem("favorites", JSON.stringify(favorites));
+    localStorage.setItem("_favorites_", JSON.stringify(favorites));
 
     router.push("/");
 
@@ -294,7 +294,7 @@ const DetailViews = ({
           const newFavorites = favorites.filter((contact) => contact.id !== id);
 
           // Save the updated favorites back to localStorage
-          localStorage.setItem("favorites", JSON.stringify(newFavorites));
+          localStorage.setItem("_favorites_", JSON.stringify(newFavorites));
         }
 
         // Then delete the contact
