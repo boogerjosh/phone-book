@@ -225,7 +225,7 @@ const HomeView: React.FC<HomeViewProps> = ({
   end
 }) => {
   // Load favorite contacts from localStorage
-  const favoritesJson = localStorage.getItem("favorites");
+  const favoritesJson = localStorage.getItem("_favorites_");
   let favorites = favoritesJson ? JSON.parse(favoritesJson) : [];
 
   let isNotFavorites = contacts.filter((contact) => {
