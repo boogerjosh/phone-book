@@ -414,8 +414,8 @@ const FormView = () => {
                         css={containerStyle.labelText}
                       >
                         Number {index + 1}
-                        <div>
-                            <div style={{ display: "flex", alignItems: "center", width: '100%', marginBottom: '0.75rem' }}>
+                        <div style={{ marginBottom: '0.75rem' }}>
+                            <div style={{ display: "flex", alignItems: "center", width: '100%' }}>
                             <input
                               css={containerStyle.inputField}
                               type="text"
