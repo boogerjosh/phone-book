@@ -280,7 +280,7 @@ const FormView = () => {
     let tempErrors = {};
 
     // Get existing contacts from localStorage
-    const savedContacts = localStorage.getItem("contacts");
+    const savedContacts = localStorage.getItem("_contacts_");
     const contacts = savedContacts ? JSON.parse(savedContacts) : [];
 
     // Validate first name
