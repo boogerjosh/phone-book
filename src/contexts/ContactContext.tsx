@@ -55,6 +55,9 @@ export const ContactProvider: React.FC = ({ children }) => {
     if (!loading && !error && data) {
       // Update the contacts state with the fetched data
       setContacts(data.contact);
+
+      // Save the contact list back to localStorage
+      localStorage.setItem("_contacts_", JSON.stringify(data.contact));
     }
   }, [loading, error, data]);
 
