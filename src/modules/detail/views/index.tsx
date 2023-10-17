@@ -244,6 +244,7 @@ const DetailViews = ({
   deleteContact,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState(false);
   const [isInFavorites, setIsInFavorites] = useState(false);
   const router = useRouter();
 
@@ -266,7 +267,7 @@ const DetailViews = ({
   }, [favorites, _detailContacts]);
 
   const handleClickFavorite = () => {
-    setIsLoading(true);
+    setIsLoadingFavorite(true);
     // Add the new contact to the favorites list
     favorites.push(_detailContacts?.contact_by_pk);
 
@@ -415,7 +416,7 @@ const DetailViews = ({
                           onClick={handleClickFavorite}
                           css={containerStyle.buttonSearch}
                           type="button"
-                          disabled={isLoading}
+                          disabled={isLoadingFavorite}
                         >
                           Add to favorites⭐
                         </button>
