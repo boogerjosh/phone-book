@@ -24,7 +24,7 @@ export const ContactProvider: React.FC = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [contacts, setContacts] = useState(() => {
   if (typeof window !== 'undefined') {
-    const savedContacts = localStorage.getItem("contacts");
+    const savedContacts = localStorage.getItem("_contacts_");
     return savedContacts ? JSON.parse(savedContacts) : [];
     } else {
       return [];
@@ -69,7 +69,7 @@ export const ContactProvider: React.FC = ({ children }) => {
       setContacts(newContacts);
 
       // Save the updated contacts data to localStorage
-      localStorage.setItem("contacts", JSON.stringify(newContacts));
+      localStorage.setItem("_contacts_", JSON.stringify(newContacts));
 
       toast.success("Successfully saved!");
     } catch (err) {
@@ -82,13 +82,13 @@ export const ContactProvider: React.FC = ({ children }) => {
       const { data } = await deleteContact({ variables: { id } });
 
       // Get the current favorites from localStorage
-      const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      const favorites = JSON.parse(localStorage.getItem("_favorites_")) || [];
 
       // Filter out the deleted contact
       const newFavorites = favorites.filter((contactId) => contactId !== id);
 
       // Save the updated favorites back to localStorage
-      localStorage.setItem("favorites", JSON.stringify(newFavorites));
+      localStorage.setItem("_favorites_", JSON.stringify(newFavorites));
 
       // Remove the deleted contact from the contacts state
       const newContacts = contacts.filter(
@@ -97,7 +97,7 @@ export const ContactProvider: React.FC = ({ children }) => {
       setContacts(newContacts);
 
       // Save the updated contacts data to localStorage
-      localStorage.setItem("contacts", JSON.stringify(newContacts));
+      localStorage.setItem("_contacts_", JSON.stringify(newContacts));
 
       toast.success("Successfully deleted!");
     } catch (err) {
