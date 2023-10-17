@@ -1,10 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import PaginationControls from "../PaginationControls";
 
 // Mock the useRouter function
-jest.mock("next/router", () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
